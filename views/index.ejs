@@ -1,4 +1,7 @@
 <%- include('header') -%>
+</head>
+<body>
+
 <%- include('nav') -%>
 
 <div class="ui right fixed vertical text menu">
@@ -8,19 +11,50 @@
   <a class="item">Most Popular </a>
 </div>
 
-<div class="ui text container">
-	<div class="ui piled segment">
-		<h1 class="ui header">My First Article
-			<div class="sub header">
-				2017-1-19 18:33:29
-				<i class="unhide icon"></i>2167
-				<i class="comment icon"></i>15
-				<i class="tag icon"></i>Javascript
-			</div>
-		</h1>
-		<h4 class="ui horizontal divider header">Abstract</h4>
-		<h3 class="ui header">这是我的第一篇博文。欢迎来到我的新家！</h3>
-	</div>
+<div id="articles" class="ui text container">
+	<article-abs v-for="data in dataset" v-bind:data="data"></article-abs>
 </div>
 
+<script type="text/javascript">
+	Vue.component('article-abs', {
+		template: '\
+			<div class="ui piled segment">\
+				<h1 class="ui header">\
+					<a v-bind:href="data.url">{{data.title}}</a>\
+					<div class="sub header">\
+						{{data.year}}-{{data.month}}-{{data.day}} {{data.hour}}:{{data.minute}}:{{data.second}}\
+						<i class="unhide icon"></i>{{data.nvisits}}\
+						<i class="comment icon"></i>{{data.ncomments}}\
+						<i class="tag icon"></i>{{data.tag}}\
+					</div>\
+				</h1>\
+				<h4 class="ui horizontal divider header">Abstract</h4>\
+				<h3 class="ui header">{{data.abstract}}</h3>\
+			</div>\
+			',
+		props: ['data']
+	});
+
+	new Vue({
+		el: '#articles',
+		data: {
+			dataset: [
+				{
+					title: 'My First Article',
+					url: 'https://www.baidu.com',
+					year: 2017,
+					month: 1,
+					day: 15,
+					hour: 13,
+					minute: 45,
+					second: 30,
+					nvisits: 1367,
+					ncomments: 15,
+					tag: 'javascript',
+					abstract: 'This is my new home! Welcome to visit!'
+				}
+			]
+		}
+	})
+</script>
 <%- include('footer') -%>
