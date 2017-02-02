@@ -39,21 +39,20 @@
 		el: '#articles',
 		data: {
 			dataset: [
-				{
-					title: 'My First Article',
-					url: 'https://www.baidu.com',
-					year: 2017,
-					month: 1,
-					day: 15,
-					hour: 13,
-					minute: 45,
-					second: 30,
-					nvisits: 1367,
-					ncomments: 15,
-					tag: 'javascript',
-					abstract: 'This is my new home! Welcome to visit!'
-				}
+
 			]
+		},
+		created: function() {
+			this.fetchData();
+		},
+		methods: {
+			fetchData: function() {
+				var _self = this;
+				$.get("/articles",function(data,status){
+					_self.dataset = data.dataset;
+				});
+				console.log(this.dataset);
+			}
 		}
 	})
 </script>
