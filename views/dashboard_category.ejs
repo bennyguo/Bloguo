@@ -1,0 +1,55 @@
+<%- include('header') -%>
+
+</head>
+<body>
+<%- include('dashboard_nav') -%>
+	
+
+<div class="ui text container">
+	<div class="ui icon fluid input">
+	  <input type="text" placeholder="创建新分类...">
+	  <i class="circular inverted add link icon"></i>
+	</div>
+	<table class="ui very basic very compact small table">
+	  <thead>
+	    <tr>
+		    <th class="eight wide">名称</th>
+		    <th class="center aligned four wide">文章数</th>
+		    <th class="center aligned four wide">操作</th>
+	  	</tr></thead>
+	  <tbody>
+	    <tr>
+	      <td>Javascript</td>
+	      <td class="center aligned">13</td>
+	      <td class="center aligned">
+	      	<a href="#">编辑 </a>|
+	      	<a href="#"> 删除</a>
+	      </td>
+	    </tr>
+	    <tr>
+	      <td>Python</td>
+	      <td class="center aligned">13</td>
+	      <td class="center aligned">
+	      	<a href="#">编辑 </a>|
+	      	<a href="#"> 删除</a>
+	      </td>
+	    </tr>
+	  </tbody>
+	  <tfoot>
+	  	<tr>
+	  		<th class="center aligned" colspan="4">
+	  			<p class="grayfont">
+	  				2条 共1页 当前第1页
+	  			</p>
+	  			<p>
+	  				<a href="#">首页 </a>|
+	  				<a href="#"> <上一页 </a>|
+	  				<a href="#"> 下一页> </a>|
+	  				<a href="#"> 末页</a>
+	  			</p>
+	  		</th>
+	  	</tr>
+	  </tfoot>
+	</table>
+</div>
+<%- include('footer') -%>

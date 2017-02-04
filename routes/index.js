@@ -10,37 +10,8 @@ router.get('/article', function(req, res, next) {
   res.render('article', { title: 'Express' });
 });
 
-var tmpdata1 = {
-					title: 'My First Article',
-					url: 'https://www.baidu.com',
-					year: 2017,
-					month: 1,
-					day: 15,
-					hour: 13,
-					minute: 45,
-					second: 30,
-					nvisits: 1367,
-					ncomments: 15,
-					tag: 'javascript',
-					abstract: 'This is my new home! Welcome to visit!'
-				};
-
-var tmpdata2 = {
-					title: 'My Second Article',
-					url: 'https://www.baidu.com',
-					year: 2017,
-					month: 1,
-					day: 13,
-					hour: 11,
-					minute: 11,
-					second: 02,
-					nvisits: 211,
-					ncomments: 1,
-					tag: 'javascript',
-					abstract: 'This is my new home! Welcome to visit!'
-				};
-
 var tmparticle = {
+					id: 10001,
 					title: 'My First Article',
 					url: 'https://www.baidu.com',
 					year: 2017,
@@ -48,10 +19,10 @@ var tmparticle = {
 					day: 15,
 					hour: 13,
 					minute: 45,
-					second: 30,
-					nvisits: 1367,
-					ncomments: 15,
-					tag: 'javascript',
+					views: 1367,
+					comments: 15,
+					categories: ['javascript', 'python'],
+					abstract: 'This is my new home! Welcome to visit!',
 					text: 'This is my new home! Welcome to visit!'
 				};
 
@@ -59,8 +30,8 @@ router.get('/articles', function(req, res, next) {
 	res.json({
 		status: 'ok',
 		dataset: [
-			tmpdata1,
-			tmpdata2
+			tmparticle,
+			tmparticle
 		]
 	})
 })
@@ -70,6 +41,27 @@ router.get('/article/test', function(req, res, next) {
 		status: 'ok',
 		data: tmparticle
 	})
+})
+
+router.get('/article-list', function(req, res, next) {
+	res.json({
+		dataset: [
+			tmparticle,
+			tmparticle
+		]
+	})
+})
+
+router.get('/dashboard', function(req, res, next) {
+	res.redirect('/dashboard/article');
+})
+
+router.get('/dashboard/article', function(req, res, next) {
+	res.render('dashboard_article', {title: 'dashboard'})
+})
+
+router.get('/dashboard/category', function(req, res, next) {
+	res.render('dashboard_category', {title: 'dashboard'})
 })
 
 module.exports = router;

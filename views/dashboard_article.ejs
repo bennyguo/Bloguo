@@ -1,0 +1,183 @@
+<%- include('header') -%>
+
+</head>
+<body>
+<%- include('dashboard_nav') -%>
+
+<div class="ui right fixed vertical text menu">
+  	<button class="circular ui icon positive large button">
+  		<i class="icon add"></i>
+	</button>
+</div>
+
+<div id="article-list" class="ui text container">
+	<table class="ui very basic very compact small table">
+	  <thead>
+	    <tr>
+		    <th class="eight wide">标题</th>
+		    <th class="center aligned two wide">浏览</th>
+		    <th class="center aligned two wide">评论</th>
+		    <th class="center aligned four wide">操作</th>
+	  	</tr></thead>
+	  <tbody>
+	    <tr
+	    	is="article-item"
+	    	v-for="data in dataset"
+	    	v-bind:data="data"
+	    	v-on:remove="remove"
+	    	v-on:categorize="categorize">	
+	    </tr>
+	  </tbody>
+	  <tfoot>
+	  	<tr>
+	  		<th class="center aligned" colspan="4">
+	  			<p class="grayfont">
+	  				2条 共1页 当前第1页
+	  			</p>
+	  			<p>
+	  				<a href="#">首页 </a>|
+	  				<a href="#"> <上一页 </a>|
+	  				<a href="#"> 下一页> </a>|
+	  				<a href="#"> 末页</a>
+	  			</p>
+	  		</th>
+	  	</tr>
+	  </tfoot>
+	</table>
+
+<div id="cat-popup" class="ui custom popup">
+	<div class="ui form">
+  		<div class="grouped fields">
+    		<label>Categories:</label>
+    		<template v-for="(val, key) in categoryData">
+    		<div class="field">
+      			<div class="ui checkbox">
+        			<input type="checkbox" v-model="categoryData[key]">
+        			<label>{{key}}</label>
+      			</div>
+    		</div>
+    		</template>
+  		</div>
+	</div>
+	<div class="ui mini buttons">
+	  <button class="ui red button" v-on:click="closePopup">Cancel</button>
+	  <div class="or"></div>
+	  <button class="ui green button" v-on:click="closePopup();setCategory();">Confirm</button>
+	</div>
+</div>
+
+</div>
+
+<div id="remove-modal" class="ui basic modal">
+	<h1 class="ui icon header">
+		<i class="trash icon"></i>
+		<div class="content">
+		确认删除文章吗？
+		</div>
+	</h1>
+  <div class="actions">
+    <div class="ui red basic cancel inverted button">
+      <i class="remove icon"></i>
+      No
+    </div>
+    <div class="ui green ok inverted button">
+      <i class="checkmark icon"></i>
+      Yes
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript">
+
+	Vue.component('article-item', {
+		template: '\
+	    <tr>\
+	      <td>\
+	      	<a v-bind:href="data.url">{{data.title}}</a>\
+	      	<span class="grayfont">\
+	      		({{data.year}}-{{data.month}}-{{data.day}} {{data.hour}}:{{data.minute}})\
+	      	</span>\
+	      </td>\
+	      <td class="center aligned">{{data.views}}</td>\
+	      <td class="center aligned">{{data.comments}}</td>\
+	      <td class="center aligned">\
+	      	<a v-bind:href="\'/dashboard/edit?id=\'+data.id">编辑 </a>|\
+	      	<a href="#" v-on:click="$emit(\'remove\',data.id)"> 删除 </a>|\
+	      	<a href="#" v-on:click="$emit(\'categorize\',$event,data.id)"> 分类 </a>\
+	      </td>\
+	    </tr>\
+	    ',
+		props: ['data']
+	});
+
+	new Vue({
+		el: '#article-list',
+		data: {
+			dataset: [
+				
+			],
+			categorizing: undefined,
+			categorizingObj: undefined,
+			categoryData: {
+				'JS': true,
+				'Python': false,
+				'C++': true
+			}
+		},
+		methods: {
+			fetchData: function() {
+				var _self = this;
+				$.get("/article-list",function(data,status){
+					_self.dataset = data.dataset;
+				});
+			},
+			remove: function(id) {
+				var _self = this;
+				$('#remove-modal')
+				  .modal({
+				    onApprove : function() {
+				      _self.doRemove(id);
+				    }
+				  })
+				  .modal('show');
+			},
+			doRemove: function(id) {
+				console.log('Remove: ' + id);
+			},
+			categorize: function(event, id) {
+				var _self = this;
+				$(event.target)
+				  .popup({
+				    popup: $('#cat-popup'),
+				    on: 'manual',
+				    onShow: function() {
+				    	_self.categorizingObj = event.target;
+				    	_self.categorizing = id;
+				    	_self.fetchCategoryOf(id);
+				    },
+				  }).popup('show');
+			},
+			closePopup: function() {
+				this.closePopupOf(this.categorizingObj);
+			},
+			closePopupOf: function(obj) {
+				$(obj).popup('hide');
+			},
+			setCategory: function() {
+				this.setCategoryOf(this.categorizing, this.categoryData);
+			},
+			fetchCategoryOf: function(id) {
+				console.log('fetchCategoryOf ' + id);
+			},
+			setCategoryOf: function(id, categories) {
+				console.log('setCategoryOf ' + id + ' to ' + JSON.stringify(categories));
+			}
+		},
+		created: function() {
+			console.log('Created: article-list');
+			this.fetchData();
+		}
+	})
+</script>
+<%- include('footer') -%>

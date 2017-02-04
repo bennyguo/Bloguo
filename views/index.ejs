@@ -22,17 +22,22 @@
 				<h1 class="ui header">\
 					<a v-bind:href="data.url">{{data.title}}</a>\
 					<div class="sub header">\
-						{{data.year}}-{{data.month}}-{{data.day}} {{data.hour}}:{{data.minute}}:{{data.second}}\
-						<i class="unhide icon"></i>{{data.nvisits}}\
-						<i class="comment icon"></i>{{data.ncomments}}\
-						<i class="tag icon"></i>{{data.tag}}\
+						{{data.year}}-{{data.month}}-{{data.day}} {{data.hour}}:{{data.minute}}\
+						<i class="unhide icon"></i>{{data.views}}\
+						<i class="comment icon"></i>{{data.comments}}\
+						<i class="tag icon"></i>{{categoriesStr}}\
 					</div>\
 				</h1>\
 				<h4 class="ui horizontal divider header">Abstract</h4>\
 				<h3 class="ui header">{{data.abstract}}</h3>\
 			</div>\
 			',
-		props: ['data']
+		props: ['data'],
+		computed: {
+			categoriesStr: function() {
+				return this.data.categories? this.categories.join(','): 'Uncategorized';
+			}
+		}
 	});
 
 	new Vue({
@@ -51,8 +56,8 @@
 				$.get("/articles",function(data,status){
 					_self.dataset = data.dataset;
 				});
-				console.log(this.dataset);
 			}
+
 		}
 	})
 </script>

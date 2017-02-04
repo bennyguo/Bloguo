@@ -3,11 +3,18 @@
 <body>
 
 <%- include('nav') -%>
-<!-- <div class="ui top fixed labeled icon vertical menu">
-	<a class="item"><i class="wechat icon"></i>微信</a>
-	<a class="item"><i class="weibo icon"></i>微博</a>
-	<a class="item"><i class="qq icon"></i>QQ</a>
-</div> -->
+
+<div class="ui right fixed vertical text menu">
+  	<div class="item"><button class="circular ui icon green button">
+  		<i class="icon wechat"></i>
+	</button></div>
+	<div class="item"><button class="circular ui icon red button">
+  		<i class="icon weibo"></i>
+	</button></div>
+	<div class="item"><button class="circular ui icon blue button">
+  		<i class="icon qq"></i>
+	</button></div>
+</div>
 
 
 <div id="article" class="ui text container">
@@ -21,17 +28,22 @@
 				<h1 class="ui header">\
 					<a v-bind:href="data.url">{{data.title}}</a>\
 					<div class="sub header">\
-						{{data.year}}-{{data.month}}-{{data.day}} {{data.hour}}:{{data.minute}}:{{data.second}}\
-						<i class="unhide icon"></i>{{data.nvisits}}\
-						<i class="comment icon"></i>{{data.ncomments}}\
-						<i class="tag icon"></i>{{data.tag}}\
+						{{data.year}}-{{data.month}}-{{data.day}} {{data.hour}}:{{data.minute}}\
+						<i class="unhide icon"></i>{{data.views}}\
+						<i class="comment icon"></i>{{data.comments}}\
+						<i class="tag icon"></i>{{categoriesStr}}\
 					</div>\
 				</h1>\
 				<h4 class="ui horizontal divider header">Content</h4>\
 				<h3 class="ui header">{{data.text}}</h3>\
 			</div>\
 			',
-		props: ['data']
+		props: ['data'],
+		computed: {
+			categoriesStr: function() {
+				return this.data.categories? this.data.categories.join(','): 'Uncategorized';
+			}
+		}
 	});
 
 	new Vue({
