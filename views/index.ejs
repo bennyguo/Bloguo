@@ -12,7 +12,7 @@
 </div>
 
 <div id="articles" class="ui text container">
-	<article-abs v-for="data in dataset" v-bind:data="data"></article-abs>
+	<article-abs v-for="data in dataset" v-bind:data="data" v-bind:categories="data.categories_info"></article-abs>
 </div>
 
 <script type="text/javascript">
@@ -23,21 +23,16 @@
 					<a v-bind:href="data.url">{{data.title}}</a>\
 					<div class="sub header">\
 						{{data.year}}-{{data.month}}-{{data.day}} {{data.hour}}:{{data.minute}}\
-						<i class="unhide icon"></i>{{data.views}}\
-						<i class="comment icon"></i>{{data.comments}}\
-						<i class="tag icon"></i>{{categoriesStr}}\
+						<i class="unhide icon"></i>{{data.views_count}}\
+						<i class="comment icon"></i>{{data.comments_count}}\
+						<i class="tag icon"></i><a v-for="cat in categories" v-bind:href="cat.url">{{cat.name}}({{cat.articles_count}})&nbsp;\
 					</div>\
 				</h1>\
 				<h4 class="ui horizontal divider header">Abstract</h4>\
 				<h3 class="ui header">{{data.abstract}}</h3>\
 			</div>\
 			',
-		props: ['data'],
-		computed: {
-			categoriesStr: function() {
-				return this.data.categories? this.categories.join(','): 'Uncategorized';
-			}
-		}
+		props: ['data', 'categories'],
 	});
 
 	new Vue({
@@ -53,7 +48,7 @@
 		methods: {
 			fetchData: function() {
 				var _self = this;
-				$.get("/articles",function(data,status){
+				$.get("/api/articles",function(data,status){
 					_self.dataset = data.dataset;
 				});
 			}

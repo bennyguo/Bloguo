@@ -18,10 +18,11 @@
 
 
 <div id="article" class="ui text container">
-	<article-full v-bind:data="data"></article>
+	<article-full v-bind:data="data" v-bind:categories="data.categories_info"></article>
 </div>
 
 <script type="text/javascript">
+	var id = <%= id %>
 	Vue.component('article-full', {
 		template: '\
 			<div class="ui basic segment">\
@@ -29,21 +30,17 @@
 					<a v-bind:href="data.url">{{data.title}}</a>\
 					<div class="sub header">\
 						{{data.year}}-{{data.month}}-{{data.day}} {{data.hour}}:{{data.minute}}\
-						<i class="unhide icon"></i>{{data.views}}\
-						<i class="comment icon"></i>{{data.comments}}\
-						<i class="tag icon"></i>{{categoriesStr}}\
+						<i class="unhide icon"></i>{{data.views_count}}\
+						<i class="comment icon"></i>{{data.comments_count}}\
+						<i class="tag icon"></i><a v-for="cat in categories" v-bind:href="cat.url">{{cat.name}}({{cat.articles_count}})&nbsp\
 					</div>\
 				</h1>\
 				<h4 class="ui horizontal divider header">Content</h4>\
-				<h3 class="ui header">{{data.text}}</h3>\
+				<h3 class="ui header" v-html="data.full_text_html"></h3>\
 			</div>\
 			',
-		props: ['data'],
-		computed: {
-			categoriesStr: function() {
-				return this.data.categories? this.data.categories.join(','): 'Uncategorized';
-			}
-		}
+		props: ['data', 'categories'],
+
 	});
 
 	new Vue({
@@ -57,7 +54,7 @@
 		methods: {
 			fetchData: function() {
 				var _self = this;
-				$.get("/article/test",function(data,status){
+				$.get("/api/articles/"+id,function(data,status){
 					_self.data = data.data;
 				});
 				console.log(this.data);

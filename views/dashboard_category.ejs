@@ -5,10 +5,10 @@
 <%- include('dashboard_nav') -%>
 	
 
-<div class="ui text container">
+<div id="category-list" class="ui text container">
 	<div class="ui icon fluid input">
-	  <input type="text" placeholder="创建新分类...">
-	  <i class="circular inverted add link icon"></i>
+	  <input type="text" v-model="newCategory" placeholder="创建新分类...">
+	  <i class="circular inverted add link icon" v-on:click="addCategory"></i>
 	</div>
 	<table class="ui very basic very compact small table">
 	  <thead>
@@ -18,21 +18,14 @@
 		    <th class="center aligned four wide">操作</th>
 	  	</tr></thead>
 	  <tbody>
-	    <tr>
-	      <td>Javascript</td>
-	      <td class="center aligned">13</td>
-	      <td class="center aligned">
-	      	<a href="#">编辑 </a>|
-	      	<a href="#"> 删除</a>
-	      </td>
-	    </tr>
-	    <tr>
-	      <td>Python</td>
-	      <td class="center aligned">13</td>
-	      <td class="center aligned">
-	      	<a href="#">编辑 </a>|
-	      	<a href="#"> 删除</a>
-	      </td>
+	    <tr
+	    	is="category-item"
+	    	v-for="(data, index) in dataset"
+	    	v-bind:data="data"
+	    	v-bind:index="index"
+	    	v-on:preedit="preEdit"
+	    	v-on:edit="edit"
+	    	v-on:remove="remove">
 	    </tr>
 	  </tbody>
 	  <tfoot>
@@ -52,4 +45,99 @@
 	  </tfoot>
 	</table>
 </div>
+<div id="remove-modal" class="ui basic modal">
+	<h1 class="ui icon header">
+		<i class="trash icon"></i>
+		<div class="content">
+		确认删除文章吗？
+		</div>
+	</h1>
+  <div class="actions">
+    <div class="ui red basic cancel inverted button">
+      <i class="remove icon"></i>
+      No
+    </div>
+    <div class="ui green ok inverted button">
+      <i class="checkmark icon"></i>
+      Yes
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+	Vue.component('category-item', {
+		template: '\
+		<tr>\
+	      <td><span v-if="!data.isEditing">{{data.name}}</span>\
+	      	<span v-if="data.isEditing"><div class="ui small input"><input type="text" v-model="data.name"></div>&nbsp;<i class="checkmark icon" v-on:click="$emit(\'edit\', index)"></i><i class="remove icon" v-on:click="data.isEditing=false"></i></span>\
+	      </td>\
+	      <td class="center aligned">{{data.articles_count}}</td>\
+	      <td class="center aligned">\
+	      	<a href="#" v-on:click="$emit(\'preedit\', index)">编辑 </a>|\
+	      	<a href="#" v-on:click="$emit(\'remove\', index)"> 删除</a>\
+	      </td>\
+	    </tr>',
+	    props: ['data', 'index']
+	})
+	new Vue({
+		el: '#category-list',
+		data: {
+			dataset: [],
+			newCategory : ''
+		},
+		methods: {
+			fetchData: function() {
+				var _self = this;
+				$.get('/api/categories', function(data, status) {
+					for(i in data.dataset) {
+						data.dataset[i].isEditing = false;
+					}
+					_self.dataset = data.dataset;
+				})
+			},
+			preEdit: function(index) {
+				this.dataset[index].isEditing = true;
+			},
+			edit: function(index) {
+				this.dataset[index].isEditing = false;
+				this.doEdit(this.dataset[index].id, this.dataset[index].name);
+			},
+			remove: function(index) {
+				var _self = this;
+				$('#remove-modal')
+				  .modal({
+				    onApprove : function() {
+				      _self.doRemove(_self.dataset[index].id);
+				    }
+				  })
+				  .modal('show');
+			},
+			doEdit: function(id, name){
+				$.post('/api/categories/edit', {id: id, name: name}, function(data, status, xhr) {
+					if(data.status == 'ok')
+						console.log('rename category ' + id + ' to ' + name);
+				})
+			},
+			doRemove(id) {
+				$.post('/api/categories/remove', {id: id}, function(data, status, xhr) {
+					if(data.status == 'ok')
+						console.log('remove category: ' + id);
+				});
+			},
+			addCategory: function() {
+				this.doAddCategory(this.newCategory);
+				this.newCategory = '';
+				this.fetchData();
+			},
+			doAddCategory: function(name) {
+				$.post('/api/categories/new', {name: name}, function(data, status, xhr) {
+					if(data.status == 'ok')
+						console.log('add new category: ' + name);
+				})
+			}
+		},
+		created: function() {
+			this.fetchData();
+		}
+	});
+</script>
 <%- include('footer') -%>

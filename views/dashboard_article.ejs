@@ -49,11 +49,11 @@
 	<div class="ui form">
   		<div class="grouped fields">
     		<label>Categories:</label>
-    		<template v-for="(val, key) in categoryData">
+    		<template v-for="cat in categoryData">
     		<div class="field">
       			<div class="ui checkbox">
-        			<input type="checkbox" v-model="categoryData[key]">
-        			<label>{{key}}</label>
+        			<input type="checkbox" v-model="cat.checked">
+        			<label>{{cat.name}}</label>
       			</div>
     		</div>
     		</template>
@@ -99,8 +99,8 @@
 	      		({{data.year}}-{{data.month}}-{{data.day}} {{data.hour}}:{{data.minute}})\
 	      	</span>\
 	      </td>\
-	      <td class="center aligned">{{data.views}}</td>\
-	      <td class="center aligned">{{data.comments}}</td>\
+	      <td class="center aligned">{{data.views_count}}</td>\
+	      <td class="center aligned">{{data.comments_count}}</td>\
 	      <td class="center aligned">\
 	      	<a v-bind:href="\'/dashboard/edit?id=\'+data.id">编辑 </a>|\
 	      	<a href="#" v-on:click="$emit(\'remove\',data.id)"> 删除 </a>|\
@@ -119,16 +119,12 @@
 			],
 			categorizing: undefined,
 			categorizingObj: undefined,
-			categoryData: {
-				'JS': true,
-				'Python': false,
-				'C++': true
-			}
+			categoryData: []
 		},
 		methods: {
 			fetchData: function() {
 				var _self = this;
-				$.get("/article-list",function(data,status){
+				$.get("/api/articles",function(data,status){
 					_self.dataset = data.dataset;
 				});
 			},
@@ -143,7 +139,10 @@
 				  .modal('show');
 			},
 			doRemove: function(id) {
-				console.log('Remove: ' + id);
+				$.post('/api/articles/remove', {id: id}, function(data, status, xhr) {
+					if(data.status == 'ok')
+						console.log('Remove: ' + id);
+				})
 			},
 			categorize: function(event, id) {
 				var _self = this;
@@ -168,10 +167,21 @@
 				this.setCategoryOf(this.categorizing, this.categoryData);
 			},
 			fetchCategoryOf: function(id) {
-				console.log('fetchCategoryOf ' + id);
+				var _self = this;
+				$.get('/api/articles/'+id+'/categories', function(data, status) {
+					_self.categoryData = data.data;
+				});
 			},
 			setCategoryOf: function(id, categories) {
-				console.log('setCategoryOf ' + id + ' to ' + JSON.stringify(categories));
+				var newCat = [];
+				for(cat in categories)
+				{
+					if(categories[cat].checked) newCat.push(categories[cat].id);
+				}
+				$.post('/api/articles/categories', {id: id, categories: newCat.join('&')}, function(data, status, xhr) {
+					if(data.status == 'ok')
+						console.log('change categories of '+id+' to '+newCat.join('&'));
+				});
 			}
 		},
 		created: function() {
