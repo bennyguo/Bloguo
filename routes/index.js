@@ -120,4 +120,13 @@ router.get('/dashboard/category', function(req, res, next) {
 	res.render('dashboard_category', {title: 'dashboard'})
 })
 
+router.get('/dashboard/write', function(req, res, next) {
+	res.render('dashboard_write', {title: 'Edit'})
+})
+
+router.post('/dashboard/write', function(req, res, next) {
+	console.log('new article: ' + JSON.stringify(req.body));
+	res.json({status: 'ok'});
+
+})
 module.exports = router;

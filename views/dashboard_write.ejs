@@ -1,0 +1,60 @@
+<%- include('header') -%>
+<link href="https://cdn.bootcss.com/quill/1.2.0/quill.snow.min.css" rel="stylesheet">
+<script src="https://cdn.bootcss.com/quill/1.2.0/quill.min.js"></script>
+</head>
+<body>
+<%- include('dashboard_nav') -%>
+
+<div class="ui text container">
+<div class="ui form" id="article-form">
+	<h4 class="ui dividing header">文章标题</h4>
+	<div class="ui fluid input">
+	  <input type="text" placeholder="请输入标题" id="title">
+	</div>
+	<h4 class="ui dividing header">摘要</h4>
+   	<textarea rows="2" placeholder="请输入摘要" id="abstract"></textarea>
+	<h4 class="ui dividing header">正文内容</h4>
+	<div id="editing-area">
+		<div id="editor" style="height:200px">
+		  <p>Hello World!</p>
+		  <p>Some initial <strong>bold</strong> text</p>
+		  <p><br></p>
+		</div>
+	</div>
+	<h4 class="ui dividing header">文章分类</h4>
+	<select multiple="" class="ui selection dropdown" id="cat-selector">
+		<option value="">请选择文章分类</option>
+		<option value="1">aa</option>
+		<option value="2">bb</option>
+	</select>
+	<button class="ui button fluid positive" id="submit">发布新文章</button>
+</div>
+</div>
+
+<script>
+	$('#cat-selector').dropdown();
+	var quill = new Quill('#editor', {
+		bounds: $('#editing-area').get(0),
+	theme: 'snow'
+	});
+	$('#submit').click(function() {
+		$('#article-form').addClass('loading');
+		var title = $('#title').attr('value');
+		var abstract = $('#abstract').attr('value');
+		var text = quill.root.innerHTML;
+		var cats = $('#cat-selector').dropdown('get value').pop();
+		$.post('', {title: title,
+					abstract: abstract,
+					text: text,
+					categories: cats}, function(data, status, xhr) {
+						$('#article-form').removeClass('loading');
+						if(data.status == 'ok')
+						{
+							console.log('submit succeed!');
+							window.location = "/dashboard";
+						}
+					});
+	});
+</script>
+
+<%- include('footer') -%>
